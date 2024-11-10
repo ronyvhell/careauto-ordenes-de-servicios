@@ -34,27 +34,53 @@ class OrdenesServicioResource extends Resource
                                     Forms\Components\Select::make('cliente_id')
                                         ->label('Cliente')
                                         ->relationship('cliente', 'nombre')
-                                        ->required()
-                                        ->suffixAction(
-                                            Action::make('Agregar Cliente')
-                                                ->label('+')
-                                                ->icon('heroicon-o-plus')
-                                                ->action(fn ($livewire) => $livewire->emit('openModal', 'cliente.create'))
-                                                ->modalHeading('Agregar Cliente')
-                                                ->modalWidth('lg')
-                                        ),
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make('nombre')
+                                                ->label('Nombre')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('apellido')
+                                                ->label('Apellido')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('email')
+                                                ->label('Correo Electrónico')
+                                                ->email()
+                                                ->required(),
+                                            Forms\Components\TextInput::make('telefono')
+                                                ->label('Teléfono')
+                                                ->tel()
+                                                ->required(),
+                                            Forms\Components\TextInput::make('direccion')
+                                                ->label('Dirección')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('documento_identidad')
+                                                ->label('Documento de Identidad')
+                                                ->required(),
+                                        ])
+                                        ->createOptionModalHeading('Registrar nuevo Cliente') 
+                                        ->required(),
+                                        
                                     Forms\Components\Select::make('vehiculo_id')
                                         ->label('Vehículo')
                                         ->relationship('vehiculo', 'placa')
-                                        ->required()
-                                        ->suffixAction(
-                                            Action::make('Agregar Vehículo')
-                                                ->label('+')
-                                                ->icon('heroicon-o-plus')
-                                                ->action(fn ($livewire) => $livewire->emit('openModal', 'vehiculo.create'))
-                                                ->modalHeading('Agregar Vehículo')
-                                                ->modalWidth('lg')
-                                        ),
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make('placa')
+                                                ->label('Placa')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('marca')
+                                                ->label('Marca')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('modelo')
+                                                ->label('Modelo')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('año')
+                                                ->label('Año')
+                                                ->required(),
+                                            Forms\Components\TextInput::make('color')
+                                                ->label('Color')
+                                                ->required(),
+                                        ])
+                                        ->createOptionModalHeading('Registrar nuevo Vehículo') 
+                                        ->required(),
                                     Forms\Components\Select::make('tipo_servicio')
                                         ->label('Tipo de Servicio')
                                         ->options([
@@ -63,9 +89,6 @@ class OrdenesServicioResource extends Resource
                                             'mantenimiento' => 'Mantenimiento',
                                         ])
                                         ->required(),
-                                    Forms\Components\Toggle::make('autorizacion_prueba_ruta')
-                                        ->label('Autorización para prueba de ruta')
-                                        ->inline(false),
                                     Forms\Components\DateTimePicker::make('fecha_creacion')
                                         ->label('Fecha y hora de ingreso')
                                         ->required(),
@@ -90,13 +113,19 @@ class OrdenesServicioResource extends Resource
                                         ->relationship('datosTaller', 'nombre_taller')
                                         ->required(),
                                     Forms\Components\Select::make('producto_id')
-                                        ->label('Producto')
+                                        ->label('Productos')
                                         ->relationship('productos', 'nombre')
+                                        ->searchable()
                                         ->multiple(),
                                     Forms\Components\Select::make('servicio_id')
                                         ->label('Servicio')
-                                        ->relationship('servicios', 'nombre')
+                                        ->relationship('servicios', 'nombre') // Usa el nombre de la relación en plural
+                                        ->searchable()
                                         ->multiple(),
+                                    Forms\Components\Toggle::make('autorizacion_prueba_ruta')
+                                        ->label('Autorización para prueba de ruta')
+                                        ->inline(false),
+                                    
                                 ]),
                         ]),
                     Wizard\Step::make('Detalles del Servicio')

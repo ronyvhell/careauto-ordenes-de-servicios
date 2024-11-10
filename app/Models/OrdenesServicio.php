@@ -37,6 +37,6 @@ class OrdenesServicio extends Model
 
     public function servicios(): BelongsToMany
     {
-        return $this->belongsToMany(Servicio::class, 'ordenes_servicio_servicio', 'orden_servicio_id', 'servicio_id');
+        return $this->belongsToMany(Servicios::class, 'ordenes_servicio_servicio', 'orden_servicio_id', 'servicio_id');
     }
 }
