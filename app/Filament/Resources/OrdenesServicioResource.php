@@ -11,6 +11,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\RichEditor;
+
+use App\Models\DatosTaller; // Colocar por defecto a Careauto
 
 class OrdenesServicioResource extends Resource
 {
@@ -33,52 +36,60 @@ class OrdenesServicioResource extends Resource
                                 ->schema([
                                     Forms\Components\Select::make('cliente_id')
                                         ->label('Cliente')
+                                        ->searchable()
                                         ->relationship('cliente', 'nombre')
                                         ->createOptionForm([
-                                            Forms\Components\TextInput::make('nombre')
-                                                ->label('Nombre')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('apellido')
-                                                ->label('Apellido')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('email')
-                                                ->label('Correo Electrónico')
-                                                ->email()
-                                                ->required(),
-                                            Forms\Components\TextInput::make('telefono')
-                                                ->label('Teléfono')
-                                                ->tel()
-                                                ->required(),
-                                            Forms\Components\TextInput::make('direccion')
-                                                ->label('Dirección')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('documento_identidad')
-                                                ->label('Documento de Identidad')
-                                                ->required(),
-                                        ])
+                                            Forms\Components\Grid::make(2) // Configura el grid para que tenga 2 columnas
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('nombre')
+                                                        ->label('Nombre')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('apellido')
+                                                        ->label('Apellido')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('email')
+                                                        ->label('Correo Electrónico')
+                                                        ->email()
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('telefono')
+                                                        ->label('Teléfono')
+                                                        ->tel()
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('direccion')
+                                                        ->label('Dirección')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('documento_identidad')
+                                                        ->label('Documento de Identidad')
+                                                        ->required(),
+                                                ]),
+                                        ])                                        
                                         ->createOptionModalHeading('Registrar nuevo Cliente') 
                                         ->required(),
                                         
                                     Forms\Components\Select::make('vehiculo_id')
                                         ->label('Vehículo')
+                                        ->searchable()
                                         ->relationship('vehiculo', 'placa')
                                         ->createOptionForm([
                                             Forms\Components\TextInput::make('placa')
-                                                ->label('Placa')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('marca')
-                                                ->label('Marca')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('modelo')
-                                                ->label('Modelo')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('año')
-                                                ->label('Año')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('color')
-                                                ->label('Color')
-                                                ->required(),
-                                        ])
+                                                        ->label('Placa')
+                                                        ->required(),
+                                            Forms\Components\Grid::make(2) // Configura el grid para 2 columnas
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('marca')
+                                                        ->label('Marca')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('modelo')
+                                                        ->label('Modelo')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('año')
+                                                        ->label('Año')
+                                                        ->required(),
+                                                    Forms\Components\TextInput::make('color')
+                                                        ->label('Color')
+                                                        ->required(),
+                                                ]),
+                                        ])                                        
                                         ->createOptionModalHeading('Registrar nuevo Vehículo') 
                                         ->required(),
                                     Forms\Components\Select::make('tipo_servicio')
@@ -111,31 +122,35 @@ class OrdenesServicioResource extends Resource
                                     Forms\Components\Select::make('datos_taller_id')
                                         ->label('Datos del Taller')
                                         ->relationship('datosTaller', 'nombre_taller')
+                                        ->default(fn () => DatosTaller::where('nombre_taller', 'careauto')->first()->id)
+                                        ->disabled()
                                         ->required(),
-                                    Forms\Components\Select::make('producto_id')
-                                        ->label('Productos')
-                                        ->relationship('productos', 'nombre')
-                                        ->searchable()
-                                        ->multiple(),
-                                    Forms\Components\Select::make('servicio_id')
-                                        ->label('Servicio')
-                                        ->relationship('servicios', 'nombre') // Usa el nombre de la relación en plural
-                                        ->searchable()
-                                        ->multiple(),
-                                    Forms\Components\Toggle::make('autorizacion_prueba_ruta')
-                                        ->label('Autorización para prueba de ruta')
-                                        ->inline(false),
-                                    
                                 ]),
                         ]),
                     Wizard\Step::make('Detalles del Servicio')
                         ->schema([
-                            Forms\Components\Grid::make(2)
+                            Forms\Components\Grid::make(1)
                                 ->schema([
-                                    Forms\Components\TextArea::make('fallas_reportadas')
+                                    Forms\Components\RichEditor::make('fallas_reportadas')
                                         ->label('Fallas Reportadas')
                                         ->required()
                                         ->placeholder('Describe las fallas reportadas por el cliente'),
+                                        Forms\Components\Grid::make(3)
+                                        ->schema([
+                                            Forms\Components\Select::make('producto_id')
+                                            ->label('Productos')
+                                            ->relationship('productos', 'nombre')
+                                            ->searchable()
+                                            ->multiple(),
+                                        Forms\Components\TextInput::make('servicio')
+                                            ->label('Servicio')
+                                            ->required(), // Campo de texto en lugar de Select
+                                        Forms\Components\TextInput::make('precio')
+                                            ->label('Precio')
+                                            ->numeric()
+                                            ->prefix('$') // Opcional, para mostrar el símbolo de moneda
+                                            ->required(),
+                                        ]),                                    
                                     Forms\Components\CheckboxList::make('procedimientos_autorizados')
                                         ->label('Procedimientos Autorizados')
                                         ->options([
@@ -143,7 +158,8 @@ class OrdenesServicioResource extends Resource
                                             'Mantenimiento' => 'Mantenimiento',
                                             'Reparación' => 'Reparación',
                                         ])
-                                        ->required(),
+                                        ->required()
+                                        ->columns(3),
                                     Forms\Components\CheckboxList::make('verificacion_fluidos')
                                         ->label('Verificación de Fluidos')
                                         ->options([
@@ -151,20 +167,24 @@ class OrdenesServicioResource extends Resource
                                             'Refrigerante' => 'Refrigerante',
                                             'Líquido de Freno' => 'Líquido de Freno',
                                         ])
-                                        ->required(),
+                                        ->required()
+                                        ->columns(3),
+                                    Forms\Components\Toggle::make('autorizacion_prueba_ruta')
+                                        ->label('Autorización para prueba de ruta')
+                                        ->inline(false),
                                 ]),
                         ]),
                     Wizard\Step::make('Inspección')
                         ->schema([
-                            Forms\Components\Grid::make(2)
+                            Forms\Components\Grid::make(1)
                                 ->schema([
                                     Forms\Components\TextArea::make('fallas_detectadas')
-                                        ->label('Fallas Detectadas')
+                                        ->label('Fallas Detectadas - Nuevas')
                                         ->required()
                                         ->placeholder('Describe las fallas detectadas durante la inspección'),
                                     Forms\Components\TextArea::make('objetos_valor')
                                         ->label('Objetos de Valor Reportados')
-                                        ->placeholder('Enumera objetos de valor encontrados en el vehículo'),
+                                        ->placeholder('Objetos de valor encontrados en el vehículo'),
                                     Forms\Components\CheckboxList::make('documentos_vehiculo')
                                         ->label('Documentos del Vehículo')
                                         ->options([
@@ -172,15 +192,21 @@ class OrdenesServicioResource extends Resource
                                             'SOAT' => 'SOAT',
                                             'Tecnomecánica' => 'Tecnomecánica',
                                         ])
-                                        ->required(),
+                                        ->required()
+                                        ->columns(3),
                                 ]),
                         ]),
-                    Wizard\Step::make('Fotos y Costos')
+                    Wizard\Step::make('Fotografías')
                         ->schema([
                             Forms\Components\Grid::make(2)
                                 ->schema([
                                     Forms\Components\FileUpload::make('foto_frente')
                                         ->label('Foto Frontal')
+                                        ->required()
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                                        ->maxSize(1024),
+                                    Forms\Components\FileUpload::make('foto_atras')
+                                        ->label('Foto Trasera')
                                         ->required()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
                                         ->maxSize(1024),
@@ -193,32 +219,28 @@ class OrdenesServicioResource extends Resource
                                         ->label('Foto Lateral Derecho')
                                         ->required()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                                        ->maxSize(1024),
-                                    Forms\Components\FileUpload::make('foto_atras')
-                                        ->label('Foto Trasera')
+                                        ->maxSize(1024),       
+                                ]),
+                        ]),
+                    Wizard\Step::make('Documentos')
+                        ->schema([
+                            Forms\Components\Grid::make(2)
+                                ->schema([
+                                    Forms\Components\FileUpload::make('orden_servicio')
+                                        ->label('Órden de Servicio')
                                         ->required()
-                                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']) // Opcional: Limitar a PDF y formatos de imagen
+                                        ->maxSize(1024), // Tamaño máximo en KB (ajusta según sea necesario)
+                                    
+                                    Forms\Components\FileUpload::make('orden_salida')
+                                        ->label('Orden de Salida')
+                                        ->required()
+                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']) // Opcional: Limitar a PDF y formatos de imagen
                                         ->maxSize(1024),
                                 ]),
                         ]),
+                        
                 ]),
-                Forms\Components\Card::make([
-                    Forms\Components\Grid::make(3)
-                        ->schema([
-                            Forms\Components\TextInput::make('subtotal')
-                                ->label('Subtotal')
-                                ->numeric()
-                                ->disabled(),
-                            Forms\Components\TextInput::make('iva')
-                                ->label('IVA')
-                                ->numeric()
-                                ->disabled(),
-                            Forms\Components\TextInput::make('total')
-                                ->label('Total')
-                                ->numeric()
-                                ->disabled(),
-                        ]),
-                ])->columnSpanFull(),
             ]);
     }
 
