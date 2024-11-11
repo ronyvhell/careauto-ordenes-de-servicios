@@ -66,32 +66,85 @@ class OrdenesServicioResource extends Resource
                                         ->createOptionModalHeading('Registrar nuevo Cliente') 
                                         ->required(),
                                         
-                                    Forms\Components\Select::make('vehiculo_id')
+                                        Forms\Components\Select::make('vehiculo_id')
                                         ->label('Vehículo')
                                         ->searchable()
                                         ->relationship('vehiculo', 'placa')
                                         ->createOptionForm([
                                             Forms\Components\TextInput::make('placa')
-                                                        ->label('Placa')
-                                                        ->required(),
-                                            Forms\Components\Grid::make(2) // Configura el grid para 2 columnas
+                                                ->label('Placa')
+                                                ->required(),
+                                            Forms\Components\Grid::make(2)
                                                 ->schema([
-                                                    Forms\Components\TextInput::make('marca')
-                                                        ->label('Marca')
+                                                    Forms\Components\Grid::make(2)
+                                                        ->schema([
+                                                            Forms\Components\Select::make('marca')
+                                                                ->label('Marca')
+                                                                ->options([
+                                                                    'Toyota' => 'Toyota',
+                                                                    'Mazda' => 'Mazda',
+                                                                    'Renault' => 'Renault',
+                                                                    'Chevrolet' => 'Chevrolet',
+                                                                    'Kia' => 'Kia',
+                                                                    'Nissan' => 'Nissan',
+                                                                    'Hyundai' => 'Hyundai',
+                                                                    'Volkswagen' => 'Volkswagen',
+                                                                    'Ford' => 'Ford',
+                                                                    'Suzuki' => 'Suzuki',
+                                                                ])
+                                                                ->reactive()
+                                                                ->required(),
+                                                            Forms\Components\Select::make('modelo')
+                                                                ->label('Modelo')
+                                                                ->options(function (callable $get) {
+                                                                    $marca = $get('marca');
+                                                                    $modelos = [
+                                                                        'Toyota' => ['Corolla' => 'Corolla', 'Hilux' => 'Hilux', 'Fortuner' => 'Fortuner', 'Yaris' => 'Yaris', 'RAV4' => 'RAV4'],
+                                                                        'Mazda' => ['Mazda 2' => 'Mazda 2', 'Mazda 3' => 'Mazda 3', 'CX-30' => 'CX-30', 'CX-5' => 'CX-5'],
+                                                                        'Renault' => ['Duster' => 'Duster', 'Kwid' => 'Kwid', 'Stepway' => 'Stepway', 'Logan' => 'Logan', 'Sandero' => 'Sandero'],
+                                                                        'Chevrolet' => ['Onix' => 'Onix', 'Tracker' => 'Tracker', 'Joy' => 'Joy', 'Spark' => 'Spark'],
+                                                                        'Kia' => ['Picanto' => 'Picanto', 'Sportage' => 'Sportage', 'Rio' => 'Rio', 'Seltos' => 'Seltos'],
+                                                                        'Nissan' => ['Versa' => 'Versa', 'Sentra' => 'Sentra', 'Kicks' => 'Kicks', 'Frontier' => 'Frontier'],
+                                                                        'Hyundai' => ['Accent' => 'Accent', 'Tucson' => 'Tucson', 'Kona' => 'Kona', 'Elantra' => 'Elantra'],
+                                                                        'Volkswagen' => ['Gol' => 'Gol', 'T-Cross' => 'T-Cross', 'Jetta' => 'Jetta', 'Polo' => 'Polo'],
+                                                                        'Ford' => ['Escape' => 'Escape', 'Ranger' => 'Ranger', 'Explorer' => 'Explorer', 'Edge' => 'Edge'],
+                                                                        'Suzuki' => ['Swift' => 'Swift', 'Vitara' => 'Vitara', 'S-Cross' => 'S-Cross', 'Jimny' => 'Jimny'],
+                                                                    ];
+                                                                    return $modelos[$marca] ?? [];
+                                                                })
+                                                                ->required(),
+                                                            Forms\Components\TextInput::make('año')
+                                                                ->label('Año')
+                                                                ->numeric()
+                                                                ->required(),
+                                                            Forms\Components\TextInput::make('color')
+                                                                ->label('Color')
+                                                                ->required(),
+                                                        ]),
+                                                    Forms\Components\Select::make('tipo_vehiculo')
+                                                        ->label('Tipo de Vehículo')
+                                                        ->options([
+                                                            'sedan' => 'Sedán',
+                                                            'suv' => 'SUV',
+                                                            'camioneta' => 'Camioneta',
+                                                            'hatchback' => 'Hatchback',
+                                                            'pickup' => 'Pickup',
+                                                            'coupe' => 'Coupé',
+                                                            'convertible' => 'Convertible',
+                                                            'van' => 'Van',
+                                                            'camion' => 'Camión',
+                                                        ])
                                                         ->required(),
-                                                    Forms\Components\TextInput::make('modelo')
-                                                        ->label('Modelo')
+                                                    Forms\Components\TextInput::make('numero_chasis')
+                                                        ->label('Número de Chasis')
                                                         ->required(),
-                                                    Forms\Components\TextInput::make('año')
-                                                        ->label('Año')
+                                                    Forms\Components\TextInput::make('numero_motor')
+                                                        ->label('Número de Motor')
                                                         ->required(),
-                                                    Forms\Components\TextInput::make('color')
-                                                        ->label('Color')
-                                                        ->required(),
-                                                ]),
-                                        ])                                        
-                                        ->createOptionModalHeading('Registrar nuevo Vehículo') 
-                                        ->required(),
+                                                ])
+                                        ])
+                                        ->createOptionModalHeading('Registrar nuevo Vehículo')
+                                        ->required(),                                    
                                     Forms\Components\Select::make('tipo_servicio')
                                         ->label('Tipo de Servicio')
                                         ->options([
@@ -123,8 +176,7 @@ class OrdenesServicioResource extends Resource
                                         ->label('Datos del Taller')
                                         ->relationship('datosTaller', 'nombre_taller')
                                         ->default(fn () => DatosTaller::where('nombre_taller', 'careauto')->first()->id)
-                                        ->disabled()
-                                        ->required(),
+                                        ->disabled(),     
                                 ]),
                         ]),
                     Wizard\Step::make('Detalles del Servicio')
@@ -222,24 +274,23 @@ class OrdenesServicioResource extends Resource
                                         ->maxSize(1024),       
                                 ]),
                         ]),
-                    Wizard\Step::make('Documentos')
+                        Wizard\Step::make('Documentos')
                         ->schema([
-                            Forms\Components\Grid::make(2)
-                                ->schema([
-                                    Forms\Components\FileUpload::make('orden_servicio')
-                                        ->label('Órden de Servicio')
-                                        ->required()
-                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']) // Opcional: Limitar a PDF y formatos de imagen
-                                        ->maxSize(1024), // Tamaño máximo en KB (ajusta según sea necesario)
-                                    
-                                    Forms\Components\FileUpload::make('orden_salida')
-                                        ->label('Orden de Salida')
-                                        ->required()
-                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']) // Opcional: Limitar a PDF y formatos de imagen
-                                        ->maxSize(1024),
-                                ]),
-                        ]),
-                        
+                            Forms\Components\FileUpload::make('orden_servicio')
+                                ->label('Órden de Servicio')
+                                ->directory('documentos_ordenes')
+                                ->storeFileNamesIn('documento_path')
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('tipo_documento', 'orden_servicio');
+                                }),
+                            Forms\Components\FileUpload::make('orden_salida')
+                                ->label('Orden de Salida')
+                                ->directory('documentos_ordenes')
+                                ->storeFileNamesIn('documento_path')
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('tipo_documento', 'orden_salida');
+                                }),
+                        ]),        
                 ]),
             ]);
     }
@@ -247,47 +298,50 @@ class OrdenesServicioResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('cliente.nombre')
-                    ->label('Cliente')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('vehiculo.placa')
-                    ->label('Vehículo')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tipo_servicio')
-                    ->label('Tipo de Servicio')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_creacion')
-                    ->label('Fecha de Ingreso')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('estado')
-                    ->label('Estado')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tecnico.nombre')
-                    ->label('Técnico Asignado')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('kilometraje')
-                    ->label('Kilometraje')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('nivel_combustible')
-                    ->label('Nivel de Combustible')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('subtotal')
-                    ->label('Subtotal')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('iva')
-                    ->label('IVA')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
-                    ->sortable(),
-            ])
+        ->columns([
+            Tables\Columns\TextColumn::make('id')
+                ->label('ID Orden')
+                ->sortable()
+                ->formatStateUsing(fn ($state) => 'ORD-' . $state), // Agrega el prefijo aquí
+            Tables\Columns\TextColumn::make('cliente.nombre')
+                ->label('Cliente')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('vehiculo.placa')
+                ->label('Placa')
+                ->searchable(),
+                Tables\Columns\BadgeColumn::make('tipo_servicio')
+                ->label('Tipo de Servicio')
+                ->colors([
+                    'primary' => 'garantía',      // Color azul para el servicio de 'garantía'
+                    'warning' => 'reparación',    // Color amarillo para el servicio de 'reparación'
+                    'success' => 'mantenimiento', // Color verde para el servicio de 'mantenimiento'
+                ])
+                ->formatStateUsing(function ($state) {
+                    // Personaliza el texto que se muestra para cada tipo de servicio
+                    return match ($state) {
+                        'garantía' => 'Garantía',
+                        'reparación' => 'Reparación',
+                        'mantenimiento' => 'Mantenimiento',
+                        default => 'Desconocido',
+                    };
+                }),
+            Tables\Columns\TextColumn::make('fecha_creacion')
+                ->label('Fecha de Ingreso')
+                ->icon('heroicon-m-calendar')
+                ->dateTime()
+                ->sortable(),
+            Tables\Columns\TextColumn::make('estado')
+                ->label('Estado')
+                ->searchable()
+                ->sortable(),
+        ])        
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

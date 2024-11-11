@@ -10,11 +10,12 @@ class Vehiculos extends Model
 
     protected $fillable = [
         'marca',
-        'version',
+        'modelo', // Asegúrate de que este campo esté aquí
         'color',
         'placa',
         'tipo_vehiculo',
         'numero_chasis',
         'numero_motor',
+        'año', // Asegúrate de que este campo esté aquí
     ];
 }
