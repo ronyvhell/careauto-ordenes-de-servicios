@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\ToggleButtons;
 
 use App\Models\DatosTaller; // Colocar por defecto a Careauto
 
@@ -172,11 +173,18 @@ class OrdenesServicioResource extends Resource
                                             'Completo' => 'Completo',
                                         ])
                                         ->required(),
-                                    Forms\Components\Select::make('datos_taller_id')
-                                        ->label('Datos del Taller')
-                                        ->relationship('datosTaller', 'nombre_taller')
-                                        ->default(fn () => DatosTaller::where('nombre_taller', 'careauto')->first()->id)
-                                        ->disabled(),     
+                                    Forms\Components\Select::make('estado')
+                                        ->label('Estado')
+                                        ->options([
+                                            'recibido' => 'Recibido',
+                                            'diagnostico' => 'En Diagnóstico',
+                                            'aprobacion' => 'Esperando Aprobación',
+                                            'reparacion' => 'En reparación',
+                                            'entrega' => 'Listo para entrega',
+                                            'entregado' => 'Entregado',
+                                            'cancelado' => 'Cancelado',
+                                        ])
+                                        ->required(),         
                                 ]),
                         ]),
                     Wizard\Step::make('Detalles del Servicio')
@@ -255,21 +263,25 @@ class OrdenesServicioResource extends Resource
                                     Forms\Components\FileUpload::make('foto_frente')
                                         ->label('Foto Frontal')
                                         ->required()
+                                        ->downloadable()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
                                         ->maxSize(1024),
                                     Forms\Components\FileUpload::make('foto_atras')
                                         ->label('Foto Trasera')
                                         ->required()
+                                        ->downloadable()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
                                         ->maxSize(1024),
                                     Forms\Components\FileUpload::make('foto_lateral_izquierdo')
                                         ->label('Foto Lateral Izquierdo')
                                         ->required()
+                                        ->downloadable()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
                                         ->maxSize(1024),
                                     Forms\Components\FileUpload::make('foto_lateral_derecho')
                                         ->label('Foto Lateral Derecho')
                                         ->required()
+                                        ->downloadable()
                                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
                                         ->maxSize(1024),       
                                 ]),
@@ -280,6 +292,7 @@ class OrdenesServicioResource extends Resource
                                 ->label('Órden de Servicio')
                                 ->directory('documentos_ordenes')
                                 ->storeFileNamesIn('documento_path')
+                                ->downloadable()
                                 ->afterStateUpdated(function ($state, $set) {
                                     $set('tipo_documento', 'orden_servicio');
                                 }),
@@ -287,6 +300,7 @@ class OrdenesServicioResource extends Resource
                                 ->label('Orden de Salida')
                                 ->directory('documentos_ordenes')
                                 ->storeFileNamesIn('documento_path')
+                                ->downloadable()
                                 ->afterStateUpdated(function ($state, $set) {
                                     $set('tipo_documento', 'orden_salida');
                                 }),
@@ -312,12 +326,11 @@ class OrdenesServicioResource extends Resource
                 Tables\Columns\BadgeColumn::make('tipo_servicio')
                 ->label('Tipo de Servicio')
                 ->colors([
-                    'primary' => 'garantía',      // Color azul para el servicio de 'garantía'
-                    'warning' => 'reparación',    // Color amarillo para el servicio de 'reparación'
-                    'success' => 'mantenimiento', // Color verde para el servicio de 'mantenimiento'
+                    'primary' => 'garantía',      
+                    'warning' => 'reparación',    
+                    'success' => 'mantenimiento', 
                 ])
                 ->formatStateUsing(function ($state) {
-                    // Personaliza el texto que se muestra para cada tipo de servicio
                     return match ($state) {
                         'garantía' => 'Garantía',
                         'reparación' => 'Reparación',
@@ -330,8 +343,29 @@ class OrdenesServicioResource extends Resource
                 ->icon('heroicon-m-calendar')
                 ->dateTime()
                 ->sortable(),
-            Tables\Columns\TextColumn::make('estado')
+            Tables\Columns\BadgeColumn::make('estado')
                 ->label('Estado')
+                ->colors([
+                    'primary' => 'recibido',
+                    'warning' => 'diagnostico',
+                    'info' => 'aprobacion',
+                    'success' => 'reparacion',
+                    'danger' => 'entrega',
+                    'gray' => 'entregado',
+                    'gray' => 'cancelado',
+                ])
+                ->formatStateUsing(function ($state) {
+                    return match ($state) {
+                        'recibido' => 'Recibido',
+                        'diagnostico' => 'En Diagnóstico',
+                        'aprobacion' => 'Esperando Aprobación',
+                        'reparacion' => 'En reparación',
+                        'entrega' => 'Listo para entrega',
+                        'entregado' => 'Entregado',
+                        'cancelado' => 'Cancelado',
+                        default => 'Desconocido',
+                    };
+                })
                 ->searchable()
                 ->sortable(),
         ])        

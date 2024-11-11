@@ -35,6 +35,7 @@ class OrdenesServicio extends Model
         'orden_servicio',
         'orden_salida',
         'tipo_documento',
+        'estado',
     ];
 
     protected $casts = [
@@ -57,12 +58,6 @@ class OrdenesServicio extends Model
     {
         return $this->belongsTo(Tecnicos::class, 'tecnico_id');
     }
-
-    public function datosTaller(): BelongsTo
-    {
-        return $this->belongsTo(DatosTaller::class, 'datos_taller_id');
-    }
-    
 
     public function productos(): BelongsToMany
     {
