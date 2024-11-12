@@ -18,7 +18,7 @@ class VehiculosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-folder'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Vehículos'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Clientes y Vehículos'; // Dividir Módulos en Grupos
-    protected static ?int $navigationSort = 4; // Orden de Aparición en el Menú
+    protected static ?int $navigationSort = 2; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {

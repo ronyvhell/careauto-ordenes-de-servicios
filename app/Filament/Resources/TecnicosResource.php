@@ -20,7 +20,7 @@ class TecnicosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Tecnicos'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Configuración'; // Dividir Módulos en Grupos
-    protected static ?int $navitagionSort = 5; // Orden de Aparición en el Menú
+    protected static ?int $navitagionSort = 4; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {

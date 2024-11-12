@@ -21,7 +21,7 @@ class ServiciosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-wrench'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Servicios'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Inventario y Servicios'; // Dividir Módulos en Grupos
-    protected static ?int $navitagionSort = 4; // Orden de Aparición en el Menú
+    protected static ?int $navitagionSort = 3; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {

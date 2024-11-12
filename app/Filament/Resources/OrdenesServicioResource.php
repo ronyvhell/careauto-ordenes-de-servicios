@@ -13,8 +13,11 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 
-use App\Models\DatosTaller; // Colocar por defecto a Careauto
 
 class OrdenesServicioResource extends Resource
 {
@@ -23,7 +26,7 @@ class OrdenesServicioResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Órdenes de Servicio';
     protected static ?string $navigationGroup = 'Gestión de órdenes';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -370,7 +373,38 @@ class OrdenesServicioResource extends Resource
                 ->sortable(),
         ])        
             ->filters([
-                //
+                SelectFilter::make('estado')
+                ->options([
+                    'recibido' => 'Recibido',
+                    'diagnostico' => 'En Diagnóstico',
+                    'aprobacion' => 'Esperando Aprobación',
+                    'reparacion' => 'En reparación',
+                    'entrega' => 'Listo para entrega',
+                    'entregado' => 'Entregado',
+                    'cancelado' => 'Cancelado',
+                ]),
+                SelectFilter::make('tipo_servicio')
+                ->options([
+                    'garantía' => 'Garantía',
+                    'reparación' => 'Reparación',
+                    'mantenimiento' => 'Mantenimiento',
+                ]),
+                Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from'),
+                    DatePicker::make('created_until'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        );
+                }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
