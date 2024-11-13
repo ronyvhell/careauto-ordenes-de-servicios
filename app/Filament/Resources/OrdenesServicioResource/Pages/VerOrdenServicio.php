@@ -14,3 +14,4 @@ class VerOrdenServicio extends ViewRecord
         return 'components.orden-servicio-detalle'; // Ruta a la vista del componente Blade
     }
 }
+

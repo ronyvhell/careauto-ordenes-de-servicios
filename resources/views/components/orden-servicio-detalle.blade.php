@@ -1,176 +1,353 @@
-{{-- resources/views/components/service-order-summary.blade.php --}}
+<x-filament::page>
+    {{-- Header Card --}}
+    <x-filament::card>
+        <!-- Encabezado de la Orden de Servicio -->
+        <div class="bg-gray-900 p-4 rounded-t-lg">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <x-heroicon-o-document-text class="w-6 h-6" />
+                    <h1 class="text-xl font-semibold">Orden de Servicio ORD-{{$record->id}}</h1>
+                </div>
+                @php
+                $estado = $record->estado;
+                $estadoText = '';
+                $badgeColor = '';
 
-<div class="container mx-auto p-4 space-y-6 max-w-6xl">
-    <!-- Encabezado de la Orden de Servicio -->
-    <div class="bg-gray-900 text-white p-4 rounded-lg">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Orden de Servicio OS-001</h1>
-            <span class="bg-secondary text-white text-lg px-4 py-2 rounded-lg">En Proceso</span>
+                switch ($estado) {
+                    case 'recibido':
+                        $estadoText = 'Recibido';
+                        $badgeColor = 'primary';
+                        break;
+                    case 'diagnostico':
+                        $estadoText = 'En Diagnóstico';
+                        $badgeColor = 'warning';
+                        break;
+                    case 'aprobacion':
+                        $estadoText = 'Esperando Aprobación';
+                        $badgeColor = 'info';
+                        break;
+                    case 'reparacion':
+                        $estadoText = 'En Reparación';
+                        $badgeColor = 'success';
+                        break;
+                    case 'entrega':
+                        $estadoText = 'Listo para Entrega';
+                        $badgeColor = 'danger';
+                        break;
+                    case 'entregado':
+                        $estadoText = 'Entregado';
+                        $badgeColor = 'gray';
+                        break;
+                    case 'cancelado':
+                        $estadoText = 'Cancelado';
+                        $badgeColor = 'dark';
+                        break;
+                    default:
+                        $estadoText = 'Desconocido';
+                        $badgeColor = 'secondary';
+                }
+            @endphp
+
+            <x-filament::badge color="{{ $badgeColor }}">
+                {{ $estadoText }}
+            </x-filament::badge>
+            </div>
         </div>
+
+        <!-- Fechas de Ingreso y Finalización -->
+        <div class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="text-sm text-gray-500">Fecha de Ingreso</div>
+                    <div class="text-lg font-medium">{{$record->created_at}}</div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Fecha Estimada de Finalización</div>
+                    <div class="text-lg font-medium">{{$record->updated_at}}</div>
+                </div>
+            </div>
+        </div>
+        </x-filament::card>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+
+        {{-- Client Card --}}
+            <x-filament::card>
+                <div class="flex items-center gap-2 mb-4">
+                    <x-heroicon-o-user class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <h2 class="text-lg font-semibold">Cliente</h2>
+                </div>
+
+                <div class="flex flex-col items-center text-center mb-4">
+                    <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
+                        <x-heroicon-o-user class="w-8 h-8 text-gray-400 dark:text-gray-300" />
+                    </div>
+                    <div class="font-medium text-lg">{{$record->cliente->nombre}} {{$record->cliente->apellido}}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">{{$record->cliente->telefono}}</div>
+                    <div class="text-sm text-primary-600 dark:text-primary-400">{{$record->cliente->email}}</div>
+                </div>
+            </x-filament::card>
+            
+        {{-- Vehicle Details Card --}}
+        <x-filament::card class="md:col-span-2">
+            <div class="flex items-center gap-2 mb-4">
+                <x-heroicon-o-truck class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <h2 class="text-lg font-semibold">Detalles del Vehículo</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Marca/Modelo</div>
+                    <div class="font-medium">{{$record->vehiculo->marca}}</div>
+                </div>
+                
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Año</div>
+                    <div class="font-medium">{{$record->vehiculo->año}}</div>
+                </div>
+
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Chasis</div>
+                    <div class="font-medium">{{$record->vehiculo->numero_chasis}}</div>
+                </div>
+
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Color</div>
+                    <div class="font-medium">{{$record->vehiculo->color}}</div>
+                </div>
+
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Motor</div>
+                    <div class="font-medium">{{$record->vehiculo->numero_motor}}</div>
+                </div>
+
+                <div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Kilometraje</div>
+                    <div class="font-medium">{{$record->kilometraje}}</div>
+                </div>
+
+                <div class="md:col-span-2 mt-2">
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Nivel de Combustible</div>
+                    <div class="font-medium">{{$record->nivel_combustible}}</div>                   
+                </div>
+            </div>
+        </x-filament::card>
+
+        {{-- Fluid Status Card --}}
+        <x-filament::card class="mb-6">
+            <div class="flex items-center gap-2 mb-4">
+                <x-heroicon-o-beaker class="w-5 h-5 text-gray-500" />
+                <h2 class="text-lg font-semibold">Estado de Fluidos</h2>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                {{-- Aceite --}}
+                <div class="text-center">
+                    <x-heroicon-o-beaker
+                        class="h-8 w-8 mx-auto mb-2 {{ in_array('Aceite', $record->verificacion_fluidos) ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}"
+                    />
+                    <div class="text-sm font-medium {{ in_array('Aceite', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        Aceite
+                    </div>
+                    <div class="text-xs {{ in_array('Aceite', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        {{ in_array('Aceite', $record->verificacion_fluidos) ? 'Adecuado' : 'Bajo' }}
+                    </div>
+                </div>
+
+                {{-- Refrigerante --}}
+                <div class="text-center">
+                    <x-heroicon-o-fire
+                        class="h-8 w-8 mx-auto mb-2 {{ in_array('Refrigerante', $record->verificacion_fluidos) ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}"
+                    />
+                    <div class="text-sm font-medium {{ in_array('Refrigerante', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        Refrigerante
+                    </div>
+                    <div class="text-xs {{ in_array('Refrigerante', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        {{ in_array('Refrigerante', $record->verificacion_fluidos) ? 'Adecuado' : 'Bajo' }}
+                    </div>
+                </div>
+
+                {{-- Líquido de Freno --}}
+                <div class="text-center">
+                    <x-heroicon-o-cog
+                        class="h-8 w-8 mx-auto mb-2 {{ in_array('Líquido de Freno', $record->verificacion_fluidos) ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}"
+                    />
+                    <div class="text-sm font-medium {{ in_array('Líquido de Freno', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        Líquido de Freno
+                    </div>
+                    <div class="text-xs {{ in_array('Líquido de Freno', $record->verificacion_fluidos) ? 'text-success-600 font-bold' : 'text-danger-600' }}">
+                        {{ in_array('Líquido de Freno', $record->verificacion_fluidos) ? 'Adecuado' : 'Bajo' }}
+                    </div>
+                </div>
+            </div>
+        </x-filament::card>
     </div>
 
-    <!-- Visualización de la Placa del Vehículo -->
-    <div class="flex justify-center">
-        <div class="bg-yellow-400 border-2 border-black text-black font-bold py-4 px-8 rounded-lg shadow-md relative">
-            <div class="text-4xl tracking-wider">AAA 123</div>
-            <div class="text-sm text-center mt-1">CAREAUTO</div>
-            <div class="absolute inset-0 border-2 border-black rounded-lg pointer-events-none" style="margin: -2px;"></div>
+    {{-- Service Details Card --}}
+    <x-filament::card class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-wrench-screwdriver class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <h2 class="text-lg font-semibold">Detalles del Servicio</h2>
         </div>
-    </div>
 
-    <!-- Información General en un Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Información del Cliente -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Información del Cliente</h2>
-            <div class="space-y-2">
-                <p><strong>Nombre:</strong> Juan Pérez</p>
-                <p><strong>Email:</strong> juan.perez@email.com</p>
-                <p><strong>Teléfono:</strong> +51 987 654 321</p>
-                <p><strong>Dirección:</strong> Av. Principal 123, Lima</p>
-                <p><strong>DNI:</strong> 12345678</p>
+        <div class="space-y-6">
+            <div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Fallas Reportadas</div>
+                <div class="font-medium">{!! $record->fallas_reportadas !!}</div>
             </div>
-        </div>
 
-        <!-- Detalles del Vehículo -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Detalles del Vehículo</h2>
-            <div class="space-y-2">
-                <p><strong>Marca/Modelo:</strong> Toyota Corolla</p>
-                <p><strong>Año:</strong> 2020</p>
-                <p><strong>Color:</strong> Plata</p>
-                <p><strong>Tipo:</strong> Sedán</p>
-                <p><strong>Chasis:</strong> 1HGBH41JXMN109186</p>
-                <p><strong>Motor:</strong> 1.8L</p>
+            <div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Servicio</div>
+                <div class="font-medium">{{$record->servicio}}</div>
             </div>
-        </div>
-
-        <!-- Detalles del Servicio -->
-        <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
-            <h2 class="text-xl font-bold mb-4">Detalles del Servicio</h2>
-            <div class="space-y-6">
-                <div>
-                    <label class="block mb-2 font-medium">Fallas Reportadas</label>
-                    <textarea rows="3" class="w-full p-2 border rounded-md" placeholder="Describa las fallas reportadas"></textarea>
-                </div>
-                <div>
-                    <label class="block mb-2 font-medium">Servicio</label>
-                    <input type="text" class="w-full p-2 border rounded-md" placeholder="Tipo de servicio">
-                </div>
-                <div>
-                    <span class="block mb-2 font-medium">Procedimientos Autorizados</span>
-                    <div class="flex space-x-4 mt-2">
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">Diagnóstico</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">Mantenimiento</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">Reparación</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer">
-                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600"></div>
-                        <span class="ml-3 text-sm font-medium">Autorización para prueba de ruta</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inspección -->
-        <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
-            <h2 class="text-xl font-bold mb-4">Inspección</h2>
-            <div class="space-y-6">
-                <div>
-                    <label class="block mb-2 font-medium">Fallas Detectadas por el Mecánico (Nuevas)</label>
-                    <textarea rows="3" class="w-full p-2 border rounded-md" placeholder="Describa las nuevas fallas detectadas"></textarea>
-                </div>
-                <div>
-                    <label class="block mb-2 font-medium">Objetos de Valor Reportados</label>
-                    <textarea rows="3" class="w-full p-2 border rounded-md" placeholder="Liste los objetos de valor"></textarea>
-                </div>
-                <div>
-                    <span class="block mb-2 font-medium">Documentos del vehículo</span>
-                    <div class="flex space-x-4 mt-2">
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">Tarjeta de propiedad</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">SOAT</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" class="form-checkbox">
-                            <span class="ml-2">Tecnomecánica</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Estado de Fluidos -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Estado de Fluidos</h2>
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div class="space-y-2">
-                    <p class="text-sm font-medium">Aceite</p>
-                    <p class="text-xs text-gray-500">Adecuado</p>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-sm font-medium">Refrigerante</p>
-                    <p class="text-xs text-gray-500">Bajo</p>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-sm font-medium">Frenos</p>
-                    <p class="text-xs text-gray-500">Adecuado</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Fotografías del Vehículo -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Fotografías del Vehículo</h2>
-            <div class="grid grid-cols-2 gap-4">
-                @foreach(['Frente', 'Atrás', 'Lado Izquierdo', 'Lado Derecho'] as $side)
-                    <div class="space-y-1">
-                        <div class="bg-gray-100 h-24 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-400">📷</span>
-                        </div>
-                        <p class="text-center text-sm">{{ $side }}</p>
-                    </div>
+            
+            <div>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Procedimientos Autorizados</div>
+            <div class="flex flex-wrap gap-2">
+                @foreach($record->procedimientos_autorizados as $procedimiento)
+                    <x-filament::badge>{{ $procedimiento }}</x-filament::badge>
                 @endforeach
             </div>
+
+            </div>
+            <div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Técnico Asignado</div>
+                <div class="font-medium">{{ $record->tecnico->nombre ?? 'No asignado' }}</div>
+            </div>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Autorización de Ruta</div>
+            <div class="flex items-center gap-2">
+                
+                @if ($record->autorizacion_prueba_ruta)
+                    <x-filament::badge color="success">Si, autorizo para prueba de Ruta</x-filament::badge>
+                @else
+                    <x-filament::badge color="danger">No, autorizo para prueba de Ruta</x-filament::badge>
+                @endif
+            </div>
+
+        </div>
+    </x-filament::card>
+
+    {{-- Vehicle Documents and Valuables Card --}}
+    <x-filament::card class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-document-text class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <h2 class="text-lg font-semibold">Documentos y Objetos de Valor</h2>
         </div>
 
-        <!-- Órdenes -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Órdenes</h2>
-            <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-semibold">Orden de Servicio</h3>
-                    </div>
-                    <button class="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md">
-                        Descargar OS-001
-                    </button>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg space-y-3">
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-semibold">Orden de Entrega</h3>
-                    </div>
-                    <button class="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md">
-                        Descargar OE-001
-                    </button>
+        <div class="space-y-6">
+            <div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Documentos del Vehículo</div>
+                <div class="flex flex-wrap gap-2">
+                    @foreach ($record->documentos_vehiculo as $documento)
+                        <x-filament::badge>{{ $documento }}</x-filament::badge>
+                    @endforeach
                 </div>
             </div>
+            <div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Objetos de Valor</div>
+                <div class="font-medium">{{$record->objetos_valor}}</div>
+
+            </div>
         </div>
+    </x-filament::card>
+
+    {{-- Vehicle Photos Card --}}
+    <x-filament::card class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-camera class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <h2 class="text-lg font-semibold">Fotografías del Vehículo</h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+            {{-- Foto de Frente --}}
+            <div class="text-center">
+                <div class="bg-gray-100 dark:bg-gray-800 aspect-video rounded-lg flex items-center justify-center">
+                    @if($record->foto_frente)
+                        <img src="{{ asset('storage/' . $record->foto_frente) }}" alt="Foto Frente" class="object-cover rounded-lg w-full h-full">
+                    @else
+                        <x-heroicon-o-camera class="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                    @endif
+                </div>
+                <p class="font-medium">Frente</p>
+            </div>
+
+            {{-- Foto de Atrás --}}
+            <div class="text-center">
+                <div class="bg-gray-100 dark:bg-gray-800 aspect-video rounded-lg flex items-center justify-center">
+                    @if($record->foto_atras)
+                        <img src="{{ asset('storage/' . $record->foto_atras) }}" alt="Foto Atrás" class="object-cover rounded-lg w-full h-full">
+                    @else
+                        <x-heroicon-o-camera class="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                    @endif
+                </div>
+                <p class="font-medium">Atrás</p>
+            </div>
+
+            {{-- Foto Lado Izquierdo --}}
+            <div class="text-center">
+                <div class="bg-gray-100 dark:bg-gray-800 aspect-video rounded-lg flex items-center justify-center">
+                    @if($record->foto_lateral_izquierdo)
+                        <img src="{{ asset('storage/' . $record->foto_lateral_izquierdo) }}" alt="Foto Lado Izquierdo" class="object-cover rounded-lg w-full h-full">
+                    @else
+                        <x-heroicon-o-camera class="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                    @endif
+                </div>
+                <p class="font-medium">Lado Izquierdo</p>
+            </div>
+
+            {{-- Foto Lado Derecho --}}
+            <div class="text-center">
+                <div class="bg-gray-100 dark:bg-gray-800 aspect-video rounded-lg flex items-center justify-center">
+                    @if($record->foto_lateral_derecho)
+                        <img src="{{ asset('storage/' . $record->foto_lateral_derecho) }}" alt="Foto Lado Derecho" class="object-cover rounded-lg w-full h-full">
+                    @else
+                        <x-heroicon-o-camera class="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                    @endif
+                </div>
+                <p class="font-medium">Lado Derecho</p>
+            </div>
+        </div>
+    </x-filament::card>
+
+    {{-- Orders Section Card --}}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"> 
+    
+    <x-filament::card class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-document-text class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <h2 class="text-lg font-semibold">Orden de Servicio</h2>
+        </div>
+
+        <div class="flex gap-4">
+            <div>
+                <a href="{{ asset('storage/' . $record->orden_servicio) }}" download class="w-full">
+                    <x-filament::button icon="heroicon-o-arrow-down-tray" color="primary" class="w-full justify-center">
+                        Descargar
+                    </x-filament::button>
+                </a>
+            </div>
+        </div>
+    </x-filament::card>
+
+    <x-filament::card class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-document-check class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <h2 class="text-lg font-semibold">Orden de Entrega</h2>
+        </div>
+
+        <div class="flex gap-4">
+            <div>
+                <a href="{{ asset('storage/' . $record->orden_salida) }}" download class="w-full">
+                    <x-filament::button icon="heroicon-o-arrow-down-tray" color="success" class="w-full justify-center">
+                        Descargar OE-001
+                    </x-filament::button>
+                </a>
+            </div>
+        </div>
+    </x-filament::card>
     </div>
-</div>
+
+    
+
+</x-filament::page>
