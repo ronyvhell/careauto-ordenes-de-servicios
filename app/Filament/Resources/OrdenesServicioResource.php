@@ -10,13 +10,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Wizard;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction; // Alias para las acciones de tabla
+use Filament\Forms\Components\Actions\Action as FormAction; // Alias para las acciones de formulario
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+
 
 
 class OrdenesServicioResource extends Resource
@@ -408,8 +410,12 @@ class OrdenesServicioResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                
+                Tables\Actions\DeleteAction::make(),
+                TableAction::make('ver')
+                ->label('Ver')
+                ->url(fn ($record) => static::getUrl('view', ['record' => $record->getKey()])) // Utiliza getKey() para obtener el ID
+                ->icon('heroicon-o-eye')
+                ->openUrlInNewTab(), // Opcional: abre en una nueva pestaña
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -429,6 +435,7 @@ class OrdenesServicioResource extends Resource
             'index' => Pages\ListOrdenesServicios::route('/'),
             'create' => Pages\CreateOrdenesServicio::route('/create'),
             'edit' => Pages\EditOrdenesServicio::route('/{record}/edit'),
+            'view' => Pages\VerOrdenServicio::route('/{record}'), // Asegúrate de que esta línea esté presente
         ];
     }
 }
