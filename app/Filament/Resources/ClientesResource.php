@@ -21,7 +21,7 @@ class ClientesResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Clientes'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Clientes y Vehículos'; // Dividir Módulos en Grupos
-    protected static ?int $navitagionSort = 2; // Orden de Aparición en el Menú
+    protected static ?int $navigationSort = 2; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {

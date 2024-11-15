@@ -19,7 +19,7 @@ class ProductosResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-archive-box'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Productos'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Inventario y Servicios'; // Dividir Módulos en Grupos
-    protected static ?int $navitagionSort = 3; // Orden de Aparición en el Menú
+    protected static ?int $navigationSort = 3; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {

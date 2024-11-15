@@ -27,6 +27,6 @@ class OrdenServicioDetalle extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.orden-servicio-detalle');
+        return view('components.orden-servicio-detalle', compact('record'));
     }
 }

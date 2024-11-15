@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class OrdenesServicio extends Model
 {
@@ -36,6 +37,7 @@ class OrdenesServicio extends Model
         'orden_salida',
         'tipo_documento',
         'estado',
+        'public_token', // Asegúrate de incluir `public_token` en $fillable si quieres que sea asignable en masa
     ];
 
     protected $casts = [
@@ -43,6 +45,17 @@ class OrdenesServicio extends Model
         'verificacion_fluidos' => 'array',
         'documentos_vehiculo' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->public_token)) {
+                $model->public_token = Str::uuid(); // Genera un UUID único para el public_token
+            }
+        });
+    }
 
     public function cliente(): BelongsTo
     {
@@ -73,5 +86,4 @@ class OrdenesServicio extends Model
     {
         return $this->hasMany(DocumentosOrdenesServicio::class, 'orden_servicio_id');
     }
-
 }

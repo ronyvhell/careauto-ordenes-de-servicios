@@ -18,8 +18,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
-
-
+use Filament\Tables\Actions\BulkAction;
+use Illuminate\Support\Collection;
+use Filament\Notifications\Notification;
 
 class OrdenesServicioResource extends Resource
 {
@@ -322,8 +323,8 @@ class OrdenesServicioResource extends Resource
                 ->label('ID Orden')
                 ->sortable()
                 ->formatStateUsing(fn ($state) => 'ORD-' . $state), // Agrega el prefijo aquí
-            Tables\Columns\TextColumn::make('cliente.nombre')
-                ->label('Cliente')
+            Tables\Columns\TextColumn::make('cliente.nombre') 
+                ->label('Cliente') 
                 ->searchable(),
             Tables\Columns\TextColumn::make('vehiculo.placa')
                 ->label('Placa')
@@ -419,7 +420,40 @@ class OrdenesServicioResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                BulkAction::make('whatsapp')
+                ->label('Enviar WhatsApp')
+                ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                ->color('success')
+                ->action(function (?Collection $records) {
+                    $record = $records->first();
+                    $cliente = $record->cliente;
+
+                    if (!$cliente || !$cliente->telefono) {
+                        return;
+                    }
+
+                    // Generar el enlace público
+                    $linkOrden = route('ordenes.public', ['public_token' => $record->public_token]);
+
+                    // Crear el mensaje de WhatsApp
+                    $mensaje = "¡Buen día!, {$cliente->nombre} {$cliente->apellido}. Puede consultar su orden de servicio en el siguiente enlace: $linkOrden";
+
+                    // Generar el enlace de WhatsApp
+                    $whatsappLink = "https://api.whatsapp.com/send?phone=57{$cliente->telefono}&text=" . urlencode($mensaje);
+
+                    Notification::make()
+                    ->title('Enlace de WhatsApp generado')
+                    ->body("Haga clic en el enlace para abrir WhatsApp: <a href=\"$whatsappLink\" target=\"_blank\" class=\"text-primary-600\">Abrir WhatsApp</a>")
+                    ->success()
+                    ->send();
+                })
+                ->requiresConfirmation()
+                ->deselectRecordsAfterCompletion()
+
             ]);
+            
+            
+                     
     }
 
     public static function getRelations(): array

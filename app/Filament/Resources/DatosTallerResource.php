@@ -20,7 +20,7 @@ class DatosTallerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-home-modern'; // Icono del Módulo
     protected static ?string $navigationLabel = 'Datos del Taller'; // Título del Módulo 
     protected static ?string $navigationGroup = 'Configuración'; // Dividir Módulos en Grupos
-    protected static ?int $navitagionSort = 4; // Orden de Aparición en el Menú
+    protected static ?int $navigationSort = 4; // Orden de Aparición en el Menú
 
     public static function form(Form $form): Form
     {
